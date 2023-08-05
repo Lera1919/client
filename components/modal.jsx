@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Children } from 'react';
+import { children } from 'react';
 
 
 export default function Modal({children}) {
