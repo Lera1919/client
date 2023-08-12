@@ -3,10 +3,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Modal from '../../../components/modal'
 import { useState } from 'react';
+import {useRouter} from 'next/navigation'
+import { Redirect } from 'next/navigation';
 
 export default function Registration() {
 
     const [showModal, setShowModal] = useState(false)
+
+    
 
     const handlerModalButton = () => {
         setShowModal(false)
