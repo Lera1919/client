@@ -13,31 +13,32 @@ export default function PostImage({images}) {
     }
 
     const imageStyle = {
-        borderRadius: '12px',
-        border: '1px solid #000',
+        // borderRadius: '50%',
+        // border: '1px solid #000',
         width: '100%',
-        height: 'auto',
+
+        // height: 'auto',
         objectFit: 'cover',
         objectPosition: 'center',
     }
 
     return (
-        <div className=''>
+        <div className='w-full h-full'>
             <Swiper
-            modules={[Navigation, Pagination]}
+            modules={[Pagination]}
                 slidesPerView={1}
                 spaceBetween={0}
-                grabCursor={true}
-                navigation
+                // grabCursor={true}
+                // navigation
                
                 pagination={{clickable:false}}
-                className=""
+                className="w-full h-full"
                 // cssMode={true}
                
             >
                 {images.map((url, index) => (
-                    <SwiperSlide key={index} virtualIndex={index}>
-                        <Image src={url} loader={imageLoader}  width={200} height={200} alt='Post'/>                        
+                    <SwiperSlide key={index} virtualIndex={index} className='max-w-[460px] max-h-[460px]'>
+                        <Image src={url} loader={imageLoader} style={imageStyle} width={512} height={512} alt='Post'/>                        
                     </SwiperSlide>
                 ))}
             </Swiper>
