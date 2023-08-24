@@ -6,17 +6,16 @@ const MAX_COUNT = 10;
 
 export default function Create() {
 
-    const galleryRef = useRef(null)
+    const galleryRef = useRef(null);
 
-    const [uploadedFiles, setUploadedFiles] = useState([])
-    const [description, setDescription] = useState('')
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [description, setDescription] = useState('');
     const [fileLimit, setFileLimit] = useState(false);
-
     const [indexDraggedItem, setIndexDraggedItem] = useState(null);
-    const [draggedItem, setDraggedItem] = useState(null);
+    const [isDragged, setIsDragged] = useState(false);
+    const [newPosition, setNewPosition] = useState(null);
 
     const handlerCreate = () => {
-
         console.log('Press Create');
     }
 
@@ -24,77 +23,79 @@ export default function Create() {
         setDescription(e.target.value.slice(0, 255));
     }
 
-    const PreviewImage = useCallback(() => {
-        const removeItemGallery = (index) => {
-            let temp = uploadedFiles.filter((item, idx) => idx !== index)
-            if (temp.length < 10) setFileLimit(false)
-            setUploadedFiles(temp)
-        }
-        const handlerDragStart = (e, index) => {
-            e.dataTransfer.effectAllowed = "move"
-            e.target.style.opacity = 0.3
-            setIndexDraggedItem(index)
-            setDraggedItem(uploadedFiles[index])
-        }
-    
-        const handlerDragEnd = (e, index) => {
-            e.dataTransfer.effectAllowed = "move"
-            e.target.style.opacity = 1
-            setIndexDraggedItem(null)
-            setDraggedItem(null)
-    
-        }
-    
-        const handlerDragOver = (e, file, index) => {
-            e.preventDefault()
-            if (index === indexDraggedItem) return
-            let position = index
-            if (e.nativeEvent.offsetX >= (e.target.offsetWidth / 2)) {
-                position = index + 1
-            }
-            let temp = [...uploadedFiles.filter( (item)=> item.sort !== draggedItem.sort )]
-            temp.splice(position, 0, draggedItem)
-            temp.map( (item, idx)=>{ item['sort'] = idx} )
-            setUploadedFiles(temp)
+    const removeItemGallery = (index) => {
+        let temp = uploadedFiles.filter((item, idx) => idx !== index);
+        if (temp.length < MAX_COUNT) setFileLimit(false);
+        setUploadedFiles(temp);
+    }
 
-            // console.log(e.nativeEvent.offsetX);
-        }
+    const handlerDragStart = (e, index, file) => {
+        setIsDragged(true);
+        e.target.style.opacity = 0.3;
+        setIndexDraggedItem(index);
+    }
 
-        return uploadedFiles.length > 0 ?
-            uploadedFiles.map((file, index) =>
-                <div
-                    key={index}
-                    className='relative'
-                    draggable='true'
-                    onDragStart={(e) => { handlerDragStart(e, index) }}
-                    onDragEnd={(e) => { handlerDragEnd(e, index) }}
-                    onDragOver={(e) => { handlerDragOver(e, file, index) }}
-                >
-                    <img src={URL.createObjectURL(file)} className='h-16 w-16 object-cover object-center rounded-md' />
-                    <button
-                        type='button'
-                        className='absolute -top-2 -right-2 p-2 rounded-md bg-red-500 hover:bg-red-600'
-                        onClick={() => removeItemGallery(index)}
-                    >
-                        <XMarkIcon className='w-4 h-4 text-white' />
-                    </button>
-                </div>)
-            :
-            <span> Добавьте фото </span>
-    }, [uploadedFiles, draggedItem, indexDraggedItem])
+    const handlerDragEnd = (e, index, file) => {
+        setIsDragged(false);
+        e.target.style.opacity = 1;
+        let copyArrayFiles = [...uploadedFiles];
+        if (newPosition !== null && newPosition !== index) {
+            copyArrayFiles.splice(newPosition, 0, file);
+            copyArrayFiles = copyArrayFiles.filter((item, idx) => {
+                let index = newPosition < indexDraggedItem ? indexDraggedItem + 1 : indexDraggedItem
+                return index !== idx
+            });
+        };
+        const clearArrayFiles = copyArrayFiles.map( (item, idx) => {
+            item.after = false;
+            item.before = false;
+            return item;
+        });
+        setIndexDraggedItem(null);
+        setUploadedFiles(clearArrayFiles);
+    }
+
+    const handlerDragOver = (e, index) => {
+        e.preventDefault();
+        if (index === indexDraggedItem) return;
+        let position = null;
+        if (e.nativeEvent.offsetX > (e.target.offsetWidth / 2)) {
+            position = index + 1;
+            uploadedFiles[index].before = false;
+            uploadedFiles[index].after = true;
+        };
+        if (e.nativeEvent.offsetX <= (e.target.offsetWidth / 2)) {
+            position = index;
+            uploadedFiles[index].before = true;
+            uploadedFiles[index].after = false;
+        };
+        setNewPosition(position);
+        setUploadedFiles([...uploadedFiles]);
+    }
+
+    const handlerDragLeave = (e, index) => {
+        e.preventDefault();
+        uploadedFiles[index].after = false;
+        uploadedFiles[index].before = false;
+    }
 
     const handleAddFiles = (event) => {
-        let temp = [...uploadedFiles.concat(Object.values(event.target.files))]
+        let newArrayFiles = [...uploadedFiles.concat(Object.values(event.target.files))];
 
-        if (temp.length > 10) {
-            temp = temp.slice(0, 10)
-        }
-        if (temp.length > 9) setFileLimit(true)
+        if (newArrayFiles.length > MAX_COUNT) {
+            newArrayFiles = newArrayFiles.slice(0, MAX_COUNT);
+        };
+        if (newArrayFiles.length > 9) setFileLimit(true);
 
-        temp.map( (item, idx)=>{item.sort = idx} )
+        newArrayFiles = newArrayFiles.map((item, idx) => {
+            item.before = false;
+            item.after = false;
+            return item;
+        });
 
-        setUploadedFiles(temp)
+        setUploadedFiles(newArrayFiles);
     }
+
 
     return (
         <div className='grid grid-cols-1 w-full p-4 gap-4 md:max-w-4xl mx-auto'>
@@ -116,7 +117,32 @@ export default function Create() {
                                     rounded-md dark:bg-slate-700 text-black dark:text-white p-4 border-2 border-dashed \
                                     border-slate-400 dark:border-slate-600'
                     >
-                        <PreviewImage />
+                        {uploadedFiles.length > 0 ? uploadedFiles.map((file, index) =>
+                            <div
+                                key={file.lastModified}
+                                className={`before:block before:w-2 before:-left-[14px] before:rounded-md before:h-full before:absolute ${file.before ? 'before:bg-blue-500' : 'bg-transparent'} 
+                                    after:block after:top-[0px] after:w-2 after:-right-[14px] after:rounded-md after:h-full after:absolute ${file.after ? 'after:bg-blue-500' : 'bg-transparent'} 
+                                    relative border-2 cursor-move border-dashed rounded-md 
+                                    ${isDragged ? ' border-slate-400 dark:border-slate-600 ' : ' border-transparent '}`}
+                                draggable='true'
+                                onDragStart={(e) => { handlerDragStart(e, index, file) }}
+                                onDragEnd={(e) => { handlerDragEnd(e, index, file) }}
+                                onDragOver={(e) => { handlerDragOver(e, index) }}
+                                onDragLeave={(e) => { handlerDragLeave(e, index) }}
+                            >
+                                <img src={URL.createObjectURL(file)} className='h-20 w-20 object-cover object-center rounded-md' />
+                                <button
+                                    type='button'
+                                    className={`${isDragged ? 'hidden ' : ''} absolute -top-2 -right-2 p-2 rounded-md bg-red-500 hover:bg-red-600`}
+                                    onClick={() => removeItemGallery(index)}
+                                >
+                                    <XMarkIcon className='w-4 h-4 text-white' />
+                                </button>
+                            </div>
+
+                        )
+                            :
+                            <span> Добавьте фото </span>}
                     </div>
                 </div>
 
