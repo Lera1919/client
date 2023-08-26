@@ -115,7 +115,7 @@ export default function Registration() {
                 <div className='lg:col-start-4 lg:col-end-6'>
                     <div className='w-full relative rounded-lg bg-white md:shadow-lg dark:bg-slate-800  px-8 py-12'>
                       {errMessage && <div className='absolute right-8 left-8 text-red-500 rounded-md p-2 text-[10px] border border-red-500 top-[20px]'>{errMessage}</div>}
-                        <div className='flex items-center justify-center gap-2 mt-4 '>
+                        <div className='flex items-center justify-center gap-2 mt-6 '>
 
                             <Image
                                 src="/images/logo.svg"
@@ -136,40 +136,40 @@ export default function Registration() {
                                 placeholder='Имя' 
                                 required
                                 value={firstName}
-                                onChange={(e)=> { setFirstName(e.target.value); setErrFirstName('') }}
+                                onChange={(e)=> { setFirstName(e.target.value); setErrFirstName(''); setErrMessage('') }}
                                 />
                                 {errFirstName && <div className='absolute text-red-500 text-[10px] -top-[16px]'> {errFirstName} </div>}
                             </div>
                             <div className='relative w-full'>
-                                <input className={`${errFirstName ? 'border-red-500' : 'bordertransparent' } border bg-slate-100 dark:bg-slate-700 text-black dark:text-white py-2 px-4 rounded-md w-full`} 
+                                <input className={`${errLastName ? 'border-red-500' : 'bordertransparent' } border bg-slate-100 dark:bg-slate-700 text-black dark:text-white py-2 px-4 rounded-md w-full`} 
                                 type='text' 
                                 name="lastName" 
                                 placeholder='Фамилия' 
                                 required
                                 value={lastName}
-                                onChange={(e)=> {setLastName(e.target.value); setErrFirstName('') }}
+                                onChange={(e)=> {setLastName(e.target.value); setErrLastName(''); setErrMessage('') }}
                                 />
                                 {errLastName && <div className='absolute text-red-500 text-[10px] -top-[16px]'> {errLastName} </div>}
                             </div>
                             <div className='relative w-full'>
-                                <input className={`${errFirstName ? 'border-red-500' : 'bordertransparent' } border bg-slate-100 dark:bg-slate-700 text-black dark:text-white py-2 px-4 rounded-md w-full`} 
+                                <input className={`${errEmail ? 'border-red-500' : 'bordertransparent' } border bg-slate-100 dark:bg-slate-700 text-black dark:text-white py-2 px-4 rounded-md w-full`} 
                                 type='email' 
                                 name="email" 
                                 placeholder='Электронная почта' 
                                 required
                                 value={email}
-                                onChange={(e)=> {setEmail(e.target.value); setErrFirstName('') }}
+                                onChange={(e)=> {setEmail(e.target.value); setErrEmail(''); setErrMessage('') }}
                                 />
                                 {errEmail && <div className='absolute text-red-500 text-[10px] -top-[16px]'> {errEmail} </div>}
                             </div>
                             <div className='relative w-full'>
-                                <input className={`${errFirstName ? 'border-red-500' : 'bordertransparent' } border bg-slate-100 dark:bg-slate-700 text-black dark:text-white py-2 px-4 rounded-md w-full`} 
+                                <input className={`${errPassword ? 'border-red-500' : 'bordertransparent' } border bg-slate-100 dark:bg-slate-700 text-black dark:text-white py-2 px-4 rounded-md w-full`} 
                                 type='password' 
                                 name="password" 
                                 placeholder='Пароль' 
                                 required
                                 value={password}
-                                onChange={(e)=> {setPassword(e.target.value); setErrFirstName('') }}
+                                onChange={(e)=> {setPassword(e.target.value); setErrPassword(''); setErrMessage('') }}
                                 />
                                 {errPassword && <div className='absolute text-red-500 text-[10px] -top-[16px]'> {errPassword} </div>}
                             </div>
