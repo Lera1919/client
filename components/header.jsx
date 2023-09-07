@@ -4,10 +4,20 @@ import { children } from 'react';
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { UserIcon, UserCircleIcon,  ArrowRightOnRectangleIcon} from '@heroicons/react/20/solid'
+import { signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function Header({children}) {
+
+  const { data: session, status, update } = useSession();
+
+  const avatar = session?.user?.image
+
+  const router = useRouter();
+
     return (
         <div className='w-full flex justify-between h-20 py-2 px-6 border-b border-slate-300 dark:border-slate-700'>            
                 <div className='flex items-center gap-2 '>
@@ -24,10 +34,12 @@ export default function Header({children}) {
               
       <Menu as="div" className="relative my-auto">
         <div>
-          <Menu.Button className="inline-flex w-full justify-center items-center rounded-full bg-violet-700 px-2 py-2 hover:bg-opacity-30 ">
-            <div className='h-10 w-10 rounded-full border-slate-800 dark:border-slate-300 flex justify-center items-center' >
-                <UserCircleIcon className="h-10 w-10 text-white"/>
-            </div>
+          <Menu.Button className="inline-flex w-full justify-center items-center rounded-full bg-violet-700 p-1 hover:bg-opacity-50 ">
+           {avatar?
+           <Image src={avatar } alt="Avatar" className='rounded-full' width={32} height={32} />
+           :
+           <UserCircleIcon className='h-8 w-8 text-white' />
+           }
           </Menu.Button>
         </div>
         <Transition
@@ -47,6 +59,7 @@ export default function Header({children}) {
                     className={`${
                       active ? 'bg-violet-500 text-white' : 'text-gray-900'
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                    onClick={() => {router.push('/profile')}}
                   >
                     {active ? (
                       <ProfileActiveIcon
@@ -68,7 +81,8 @@ export default function Header({children}) {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    className={`${
+                  onClick={() => signOut()}
+                      className={`${
                       active ? 'bg-violet-500 text-white' : 'text-gray-900'
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   >
