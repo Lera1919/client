@@ -14,6 +14,8 @@ export default function Header({children}) {
 
   const { data: session, status, update } = useSession();
 
+  
+
   const avatar = session?.user?.image
 
   const router = useRouter();
@@ -36,7 +38,7 @@ export default function Header({children}) {
         <div>
           <Menu.Button className="inline-flex w-full justify-center items-center rounded-full bg-violet-700 p-1 hover:bg-opacity-50 ">
            {avatar?
-           <Image src={avatar } alt="Avatar" className='rounded-full' width={32} height={32} />
+           <Image src={avatar } alt="Avatar" className=' w-11 h-11 object-center bg-slate-400 dark:bg-slate-700 object-cover rounded-full' unoptimized width={32} height={32} />
            :
            <UserCircleIcon className='h-8 w-8 text-white' />
            }
